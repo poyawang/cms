@@ -1,24 +1,28 @@
-<!-- <div class="row">
-  <div class="col-xs-12">
-    <img src="" alt="" class="img-responsive">
+<div class="list-group-item clearfix">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1>{{ contact.name }}</h1>
+    </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-xs-12">
-    <h1>Contact Name</h1>
+  <div class="row">
+    <div class="col-xs-12">
+      <img [src]="contact.imageUrl" alt="" class="img-responsive">
+    </div>
   </div>
-</div> -->
-<div class="row list-group-item clearfix">
-  <div class="col-xs-12">
-    <div class="btn-group">
-      <button type="button" class="btn btn-primary">Edit</button>
-      <button type="button" class="btn btn-danger">Delete</button>
+  <div class="row pull-right">
+    <div class="col-xs-12">
+      <div class="btn-group">
+        <button type="button" class="btn btn-primary">Edit</button>
+        <button type="button" class="btn btn-danger">Delete</button>
+      </div>
     </div>
   </div>
 </div>
+
+
 <div class="row list-group-item clearfix">
   <div class="col-xs-12">
-    <p>Email:</p>
-    <p>Phone:</p>
+    <p>Email: {{contact.email}}</p>
+    <p>Phone: {{contact.phone}}</p>
   </div>
 </div>
