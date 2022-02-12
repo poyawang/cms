@@ -10,8 +10,8 @@ export class AppComponent {
 
   loadedFeature = 'documents';
 
-  switchView(selectedFeature: string){
-    this.loadedFeature = selectedFeature;
-  }
+  // switchView(selectedFeature: string){
+  //   this.loadedFeature = selectedFeature;
+  // }
 
 }

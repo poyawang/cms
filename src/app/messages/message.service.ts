@@ -10,14 +10,16 @@ export class MessageService {
   messageSelectedEvent = new EventEmitter<Message>();
   messageChangedEvent = new EventEmitter<Message[]>();
 
-  messages: Message[]= [];
+  // messages: Message[]= [];
+  messages: Message[];
 
-  getMessages() {
+  getMessages():Message[] {
     return this.messages.slice()
   };
 
 
-  getMessage(id: string): Message{
+  getMessage(id: string): Message {
+    //loop through all the messages
     for (const message of this.messages) {
       if (message.id === id) {
         return message;

@@ -4,9 +4,6 @@
   </div>
 
   <div class="col-md-4">
-    <app-document-detail
-    [document]="selectedDocument"
-    *ngIf = "selectedDocument != null && selectedDocument != undefined"
-    ></app-document-detail>
+    <router-outlet></router-outlet>
   </div>
 </div>

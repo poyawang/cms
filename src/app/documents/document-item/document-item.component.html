@@ -1,5 +1,6 @@
-<a class="list-group-item clearfix documentDiv" >
-  <div>
-    <h4>{{document.name}}</h4>
-  </div>
-</a>
+
+<div class="list-group-item clearfix documentDiv">
+  <a routerLinkActive="active" routerLink="{{document.id}}" >
+    {{document?.name}}
+  </a>
+</div>
