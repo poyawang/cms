@@ -13,6 +13,10 @@ export class MessageService {
   // messages: Message[]= [];
   messages: Message[];
 
+  constructor() {
+    this.messages = MOCKMESSAGES;
+  }
+
   getMessages():Message[] {
     return this.messages.slice()
   };
@@ -20,7 +24,7 @@ export class MessageService {
 
   getMessage(id: string): Message {
     //loop through all the messages
-    for (const message of this.messages) {
+    for (let message of this.messages) {
       if (message.id === id) {
         return message;
       }
@@ -33,7 +37,5 @@ export class MessageService {
     this.messageChangedEvent.emit(this.messages.slice());
   }
 
-  constructor() {
-    this.messages = MOCKMESSAGES;
-  }
+
 }

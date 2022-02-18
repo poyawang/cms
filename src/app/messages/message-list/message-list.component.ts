@@ -8,11 +8,8 @@ import { MessageService } from "../message.service"
   styleUrls: ['./message-list.component.css']
 })
 export class MessageListComponent implements OnInit {
-  messages: Message[] = [
-    // new Message(1, "hello there", "random text", "Anna"),
-    // new Message(2, "another one", "here you go", "Fendy"),
-    // new Message(3, "hola", "here here", "Eli")
-  ]
+  messages: Message[] = []
+
   constructor(private messageService: MessageService) { }
 
   ngOnInit(): void {
