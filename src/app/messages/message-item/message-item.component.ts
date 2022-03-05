@@ -3,6 +3,7 @@ import { Message } from '../message.model';
 import { ContactService } from '../../contacts/contact.service';
 import { Contact } from '../../contacts/contact.model';
 
+
 @Component({
   selector: 'app-message-item',
   templateUrl: './message-item.component.html',
@@ -11,12 +12,13 @@ import { Contact } from '../../contacts/contact.model';
 
 export class MessageItemComponent implements OnInit{
   @Input() ipMessage: Message;
-  messageSender: string;
+  messageSender: string ="";
 
   constructor(private contactService: ContactService) {}
 
   ngOnInit() {
      const contact: Contact = this.contactService.getContact(this.ipMessage?.sender);
      this.messageSender = contact?.name;
+
   }
 }

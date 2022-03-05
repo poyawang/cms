@@ -9,7 +9,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./contact-list.component.css']
 })
 export class ContactListComponent implements OnInit {
-
+  // property for search term
+  term: String=""
   contacts: Contact[] = []
 
   constructor(private contactService: ContactService) { }
@@ -34,5 +35,12 @@ export class ContactListComponent implements OnInit {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
+
+  //method to react on key press for search
+  search(value: string) {
+    //assign the value to the term prop
+    this.term = value;
+
+    }
 
 }
