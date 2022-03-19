@@ -1,134 +1,151 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import {Document} from "./document.model"
-import {MOCKDOCUMENTS} from './MOCKDOCUMENTS';
 import { Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { Document } from './document.model';
+import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
   documentSelectedEvent = new EventEmitter<Document>();
-  documentChangedEvent = new EventEmitter<Document[]>();
-
   documentListChangedEvent = new Subject<Document[]>();
-
-  //property for max id
   maxDocumentId: number;
+
+  startedEditing = new Subject<number>();
 
   documents: Document[] = [];
 
   constructor(private http: HttpClient) {
     // this.documents = MOCKDOCUMENTS;
-    // this.getDocuments;
-    // this.maxDocumentId = this.getMaxId()
+    // this.maxDocumentId = this.getMaxId();
   }
 
-  getDocuments() {
-    this.http.get<Document[] >('https://cms-project-3d1c1-default-rtdb.firebaseio.com/documents.json')
-      //subscribe to observable returning
-      .subscribe(
-        //sucess function
-        (documents: Document[] ) => {
-          //assign the array of documents received to the documents class attribute
-          this.documents = documents
-          this.maxDocumentId = this.getMaxId()
-          //sort alphabetically by name
-          this.documents.sort((a, b) => (a.name < b.name) ? 1 : (a.name > b.name) ? -1 : 0)
-          // signal that the list has changed
-          this.documentListChangedEvent.next(this.documents.slice());
-        },
-        (error: any) => {
-          console.log(error);
-        }
+  getDocuments(): Document[] {
+    this.http.get('http://localhost:3000/documents')
+    .subscribe(
+      (documents: Document[]) => {
+        this.documents = documents
+        this.maxDocumentId = this.getMaxId();
+        this.documents.sort();
+        this.documentListChangedEvent.next(this.documents.slice());
+      },
+      (error: any) => {
+        console.log(error.message);
+      }
     )
-    return this.documents.slice()
+
+    return this.documents.slice();
   }
 
-  getDocument(id:string): Document {
-    for (let document of this.documents){
-      if(document.id === id){
-        return document
+  storeDocuments() {
+    const json = JSON.stringify(this.documents);
+    this.http.put(
+      'https://cms-project-63929-default-rtdb.firebaseio.com/documents.json',
+      json,
+      {
+        headers: new HttpHeaders({'Content-Type':'application/json'})
+      }
+    ). subscribe(() => {
+        this.documentListChangedEvent.next(this.documents.slice());
+    })
+  }
+
+  getDocument(id: string): Document {
+    for (let document of this.documents) {
+      if (document.id == id) {
+        return document;
       }
     }
     return null;
   }
 
-  deleteDocument(document: Document) {
-    if (!document) {
-      return;
+ getMaxId(): number {
+  let maxId: number = 0;
+
+  for (let document of this.documents) {
+    let currentId = +document.id;
+    if (currentId > maxId) {
+      maxId = currentId;
     }
-    const pos = this.documents.indexOf(document);
-    if (pos < 0) {
-      return;
-    }
-    this.documents.splice(pos, 1);
-    let documentsListClone = this.documents.slice()
-    // this.documentListChangedEvent.next(documentsListClone)
-    this.storeDocuments()
   }
 
+  return maxId
+ }
 
+ addDocument(document: Document) {
+  if (!document) {
+    return;
+  }
 
-  getMaxId(): number {
-    let maxId = 0;
-    for (const document of this.documents) {
-      const currentId = +document.id;
-      if (currentId > maxId) {
-        maxId = currentId;
+  // make sure id of the new Document is empty
+  document.id = '';
+
+  const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+  // add to database
+  this.http.post<{ message: string, document: Document }>('http://localhost:3000/documents',
+    document,
+    { headers: headers })
+    .subscribe(
+      (responseData) => {
+        // add new document to documents
+        this.documents.push(responseData.document);
+        this.storeDocuments();
       }
-    }
-    return maxId;
+    );
+}
+
+ updateDocument(originalDocument: Document, newDocument: Document) {
+  if (!originalDocument || !newDocument) {
+    return;
   }
 
-  addDocument(newDocument: Document) {
-    if(!newDocument){
-      return;
-    }
-    this.maxDocumentId++
-    newDocument.id = this.maxDocumentId.toString()
-    this.documents.push(newDocument);
-    let documentsListClone = this.documents.slice()
-    // this.documentListChangedEvent.next(documentsListClone)
-    this.storeDocuments()
+  const pos = this.documents.findIndex(d => d.id === originalDocument.id);
+
+  if (pos < 0) {
+    return;
   }
 
-  updateDocument(originalDocument: Document, newDocument: Document) {
-    if (!originalDocument || !newDocument) {
-      return
-    }
+  // set the id of the new Document to the id of the old Document
+  newDocument.id = originalDocument.id;
+  // newDocument._id = originalDocument._id;
 
-    //get position of original document
-    const pos = this.documents.indexOf(originalDocument);
-    if (pos < 0) {
-      return;
-    }
+  const headers = new HttpHeaders({'Content-Type': 'application/json'});
 
-    newDocument.id = originalDocument.id
-    this.documents[pos] = newDocument
-    let documentsListClone = this.documents.slice()
-    // this.documentListChangedEvent.next(documentsListClone)
-    this.storeDocuments()
+  // update database
+  this.http.put('http://localhost:3000/documents/' + originalDocument.id,
+    newDocument, { headers: headers })
+    .subscribe(
+      (response: Response) => {
+        this.documents[pos] = newDocument;
+        this.storeDocuments();
+      }
+    );
+}
+
+ deleteDocument(document: Document) {
+
+  if (!document) {
+    return;
   }
 
-  storeDocuments() {
-      //stringify the list of documnts
-      let documents = JSON.stringify(this.documents);
+  const pos = this.documents.findIndex(d => d.id === document.id);
 
-      //create header for content type
-      const headers = new HttpHeaders({
-        'Content-Type': 'application/json'
-      });
+  if (pos < 0) {
+    return;
+  }
 
-      //put method with url, documents object to replace, and headers
-      this.http.put('https://cms-project-3d1c1-default-rtdb.firebaseio.com/documents.json', documents, { headers: headers })
-        //subscribe to response
-        .subscribe(
-          () => {
-            //once a response has been received, signal that the document list has changed, send copy of list
-            this.documentListChangedEvent.next(this.documents.slice());
-          }
-        )
-    }
+  // delete from database
+  this.http.delete('http://localhost:3000/documents/' + document.id)
+    .subscribe(
+      (response: Response) => {
+        this.documents.splice(pos, 1);
+        this.storeDocuments();
+      }
+    );
+}
+
 
 }
