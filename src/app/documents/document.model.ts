@@ -12,5 +12,4 @@ export class Document {
     this.url = url;
     this.children = children;
   }
-
 }

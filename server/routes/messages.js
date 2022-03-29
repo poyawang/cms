@@ -19,10 +19,9 @@ router.get('/', (req, res, next) => {
     .populate('sender')
     .then(messages => {
       //return successful response
-      res.status(200).json({
-        message: 'Messages fetched successfully',
-        messages: messages
-      });
+      res.status(200).json(
+        messages
+      );
     })
     .catch(error => {
       //return error if necessary

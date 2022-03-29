@@ -18,10 +18,10 @@ router.get('/', (req, res, next) => {
   Document.find()
     .then(documents => {
       //send scucessful response with mssage and documents
-      res.status(200).json({
-        message: 'Documents fetched successfully',
-        documents: documents
-      });
+      res.status(200).json(
+        documents
+      );
+
     })
     .catch(error => {
       //return error if something happens

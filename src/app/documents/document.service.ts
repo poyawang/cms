@@ -92,7 +92,6 @@ export class DocumentService {
       (responseData) => {
         // add new document to documents
         this.documents.push(responseData.document);
-        this.storeDocuments();
       }
     );
 }
@@ -120,7 +119,7 @@ export class DocumentService {
     .subscribe(
       (response: Response) => {
         this.documents[pos] = newDocument;
-        this.storeDocuments();
+        // this.storeDocuments();
       }
     );
 }
@@ -142,7 +141,6 @@ export class DocumentService {
     .subscribe(
       (response: Response) => {
         this.documents.splice(pos, 1);
-        this.storeDocuments();
       }
     );
 }

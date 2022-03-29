@@ -17,6 +17,7 @@ const documentRoutes = require('./server/routes/documents');
 
 
 // establish a connection to the mongo database
+// mongoose.connect('mongodb+srv://poyawang:cms@cluster0.fyfql.mongodb.net/cms?retryWrites=true&w=majority',
 mongoose.connect('mongodb+srv://poyawang:cms@cluster0.fyfql.mongodb.net/cms?retryWrites=true&w=majority',
    { useNewUrlParser: true }, (err, res) => {
       if (err) {

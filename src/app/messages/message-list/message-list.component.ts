@@ -18,10 +18,10 @@ export class MessageListComponent implements OnInit {
       this.messages = messages;
     });
 
-    this.messages = this.messageService.getMessages();
+    this.messageService.getMessages();
   }
 
   onAddMessage(message: Message){
-    // this.messages.push(message);
+    this.messages.push(message);
   }
 }

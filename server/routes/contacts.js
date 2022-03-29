@@ -41,10 +41,9 @@ router.get('/:id', (req, res, next) => {
     //populate
     .populate('group')
     .then(contact => {
-      res.status(200).json({
-        message: 'Contact fetched successfully',
-        contact: contact
-      });
+      res.status(200).json(
+        contact
+      );
     })
     .catch(error => {
       returnError(res, error);

@@ -24,25 +24,24 @@ export class MessageService {
   }
 
   getMessages() {
-    //use http get
-    this.http.get<{ message: string, messages: Message[] }>('http://localhost:3000/messages')
+    this.http.get<Message[] >('https://cms-project-3d1c1-default-rtdb.firebaseio.com/messages.json')
       //subscribe to observable returning
       .subscribe(
         //sucess function
-        (messagesData) => {
-          //assign the array of contacts received to the contacts class attribute
-          this.messages = messagesData.messages;
+        (messages: Message[] ) => {
+          //assign the array of documents received to the documents class attribute
+          this.messages = messages
+          this.maxMessageId = this.getMaxId()
           //sort alphabetically by name
           this.messages.sort((a, b) => (a.id < b.id) ? 1 : (a.id > b.id) ? -1 : 0)
-          //signal that the list has changed
           this.messageListChangedEvent.next(this.messages.slice());
         },
         (error: any) => {
           console.log(error);
         }
-      )
-  }
-
+    )
+    return this.messages.slice()
+  };
 
 
   getMessage(id: string): Message {
@@ -55,32 +54,16 @@ export class MessageService {
     return null;
   }
 
-  addMessage(newMessage: Message) {
-    //check if message is defined
-    if (!newMessage) {
-      //exit
+  addMessage(newMessage: Message){
+    if(!newMessage){
       return;
     }
-
-    //set headers
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
-    //convert object to string to send on request
-    newMessage.id = '';
-    const strMessage = JSON.stringify(newMessage);
-
-    //send request with object and headers
-    this.http.post('http://localhost:3000/messages', strMessage, { headers: headers })
-      //subscribe to response
-      .subscribe(
-        (messages: Message[]) => {
-          //assign messages list
-          this.messages = messages;
-          //emit change
-          this.messageListChangedEvent.next(this.messages.slice());
-        });
+    this.maxMessageId++
+    newMessage.id = this.maxMessageId.toString()
+    this.messages.push(newMessage);
+    let documentsListClone = this.messages.slice()
+    // this.documentListChangedEvent.next(documentsListClone)
+    this.storeMessages()
   }
 
   getMaxId(): number {
